@@ -1,0 +1,60 @@
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven'
+
+    group 'co.aikar'
+    version '1.0.0-SNAPSHOT'
+
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven {
+            name 'aikar'
+            url 'https://repo.aikar.co/content/groups/aikar/'
+        }
+    }
+
+    dependencies {
+        compileOnly group: 'org.jetbrains', name: 'annotations', version: '15.0'
+    }
+
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+
+        from sourceSets.main.allSource
+    }
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        from javadoc.destinationDir
+        classifier = 'javadoc'
+    }
+
+    artifacts {
+        archives javadocJar
+        archives sourcesJar
+    }
+
+    task deploy() {
+        dependsOn install
+        dependsOn uploadArchives
+    }
+
+    if(project.hasProperty('aikarRepoUser') && project.hasProperty('aikarRepoPass')) {
+        uploadArchives {
+            repositories {
+                mavenDeployer {
+                    repository(url: 'https://repo.aikar.co/content/repositories/aikar-snapshots/') {
+                        authentication(userName: aikarRepoUser, password: aikarRepoPass)
+                    }
+
+                    snapshotRepository(url: 'https://repo.aikar.co/content/repositories/aikar-snapshots/') {
+                        authentication(userName: aikarRepoUser, password: aikarRepoPass)
+                    }
+                }
+            }
+        }
+    }
+}
