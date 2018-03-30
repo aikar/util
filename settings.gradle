@@ -1,3 +1,4 @@
 rootProject.name = 'util'
 include 'MRUMapCache'
+include 'Table'
 
