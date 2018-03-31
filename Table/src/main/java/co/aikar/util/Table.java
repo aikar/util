@@ -32,6 +32,7 @@ import java.util.Objects;
 import java.util.Spliterators;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -41,7 +42,15 @@ public class Table <R, C, V> {
     private final Function<R, Map<C, V>> colMapSupplier;
 
     public Table() {
-        this(new HashMap<>(), r -> new HashMap<>());
+        this(new HashMap<>(), (Supplier<Map<C, V>>) HashMap::new);
+    }
+
+    public Table(Supplier<Map<C, V>> columnMapSupplier) {
+        this(new HashMap<>(), columnMapSupplier);
+    }
+
+    public Table(Map<R, Map<C, V>> backingRowMap, Supplier<Map<C, V>> columnMapSupplier) {
+        this(backingRowMap, (r) -> columnMapSupplier.get());
     }
 
     public Table(Map<R, Map<C, V>> backingRowMap, Function<R, Map<C, V>> columnMapSupplier) {
