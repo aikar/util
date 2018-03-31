@@ -22,3 +22,6 @@
  */
 
 version '1.0.0-SNAPSHOT'
+dependencies {
+    compile 'co.aikar:DelegatingMap:1.0.0-SNAPSHOT'
+}

@@ -226,6 +226,27 @@ public class Table <R, C, V> {
         return v;
     }
 
+    public Map<C, V> row(R row) {
+        Map<C, V> EMPTY = new HashMap<>(0);
+        return new DelegatingMap<C, V>() {
+            @Override
+            public Map<C, V> delegate(boolean readOnly) {
+                if (readOnly) {
+                    return Table.this.rowMap.getOrDefault(row, EMPTY);
+                }
+                return getColMapForWrite(row);
+            }
+
+            @Override
+            public V remove(Object key) {
+                Map<C, V> delegate = delegate(false);
+                V remove = delegate.remove(key);
+                removeIfEmpty(row, delegate);
+                return remove;
+            }
+            // iterators may leave us empty, but the next get will remove it.
+        };
+    }
     // Other stuff
 
     public interface TablePredicate<R, C, V> {
@@ -248,12 +269,14 @@ public class Table <R, C, V> {
     }
 
     private Map<C, V> getColMapIfExists(R row) {
-        Map<C, V> rowMap = this.rowMap.get(row);
-        if (rowMap == null) {
-            return null;
+        Map<C, V> colMap = this.rowMap.get(row);
+        if (colMap != null && colMap.isEmpty()) {
+            rowMap.remove(row);
+            colMap = null;
         }
-        return rowMap;
+        return colMap;
     }
+
     private Map<C, V> getColMapForWrite(R row) {
         return this.rowMap.computeIfAbsent(row, this.colMapSupplier);
     }
@@ -263,6 +286,7 @@ public class Table <R, C, V> {
             this.rowMap.remove(row);
         }
     }
+
     public interface Entry <R, C, V> {
         R getRow();
         C getCol();
