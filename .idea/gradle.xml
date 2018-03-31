@@ -9,6 +9,7 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/LoadingMap" />
             <option value="$PROJECT_DIR$/MRUMapCache" />
             <option value="$PROJECT_DIR$/Table" />
           </set>
