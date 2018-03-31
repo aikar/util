@@ -36,7 +36,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-public class Table <R, C, V> {
+public class Table <R, C, V> implements Iterable<Table.Entry<R, C, V>>{
 
     private final Map<R, Map<C, V>> rowMap;
     private final Function<R, Map<C, V>> colMapSupplier;

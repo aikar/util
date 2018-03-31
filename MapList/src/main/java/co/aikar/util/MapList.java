@@ -31,7 +31,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class MapList <K, V> implements DelegatingMap<K, List<V>> {
+public class MapList <K, V> implements DelegatingMap<K, List<V>>, Iterable<MapList.Entry<K, V>> {
     private final Map<K, List<V>> backingMap;
     private final Function<K, List<V>> listSupplier;
 

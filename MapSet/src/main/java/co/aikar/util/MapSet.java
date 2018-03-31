@@ -36,7 +36,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class MapSet <K, V> implements DelegatingMap<K, Set<V>> {
+public class MapSet <K, V> implements DelegatingMap<K, Set<V>>, Iterable<MapSet.Entry<K, V>> {
 
     private final Map<K, Set<V>> backingMap;
     private final Function<K, Set<V>> setSupplier;
