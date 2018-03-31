@@ -26,6 +26,7 @@ package co.aikar.util;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -100,6 +101,20 @@ public class MapSet <K, V> implements DelegatingMap<K, Set<V>>, Iterable<MapSet.
         boolean removed = set.removeIf(it -> Objects.equals(it, value));
         if (set.isEmpty()) {
             backingMap.remove(key);
+        }
+        return removed;
+    }
+
+    public boolean removeAll(Collection<V> values) {
+        boolean removed = false;
+        for (Iterator<Map.Entry<K, Set<V>>> iterator = backingMap.entrySet().iterator(); iterator.hasNext(); ) {
+            Map.Entry<K, Set<V>> entry = iterator.next();
+            if (entry.getValue().removeAll(values)) {
+                removed = true;
+            }
+            if (entry.getValue().isEmpty()) {
+                iterator.remove();
+            }
         }
         return removed;
     }

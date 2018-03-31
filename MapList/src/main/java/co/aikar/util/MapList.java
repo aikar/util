@@ -97,6 +97,20 @@ public class MapList <K, V> implements DelegatingMap<K, List<V>>, Iterable<MapLi
         return removed;
     }
 
+    public boolean removeAll(Collection<V> values) {
+        boolean removed = false;
+        for (Iterator<Map.Entry<K, List<V>>> iterator = backingMap.entrySet().iterator(); iterator.hasNext(); ) {
+            Map.Entry<K, List<V>> entry = iterator.next();
+            if (entry.getValue().removeAll(values)) {
+                removed = true;
+            }
+            if (entry.getValue().isEmpty()) {
+                iterator.remove();
+            }
+        }
+        return removed;
+    }
+
     public interface ForEachEntry<K, V>  {
         void accept(K key, V val);
     }
