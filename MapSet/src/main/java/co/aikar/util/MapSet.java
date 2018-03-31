@@ -114,11 +114,11 @@ public class MapSet <K, V> implements DelegatingMap<K, Set<V>>, Iterable<MapSet.
     }
 
     public interface ForEach <K, V>  {
-        void accept(K key, V val);
+        void process(K key, V val);
     }
 
     public void forEach(ForEach<K, V> action) {
-        backingMap.forEach((key, value) -> value.forEach(v -> action.accept(key, v)));
+        backingMap.forEach((key, value) -> value.forEach(v -> action.process(key, v)));
     }
 
     @Override
@@ -193,7 +193,9 @@ public class MapSet <K, V> implements DelegatingMap<K, Set<V>>, Iterable<MapSet.
 
         @Override
         public Entry<K, V> next() {
-            return next;
+            Entry<K, V> prev = this.next;
+            next = getNext();
+            return prev;
         }
     }
 
