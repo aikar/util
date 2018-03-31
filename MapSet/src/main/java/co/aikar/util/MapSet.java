@@ -113,12 +113,20 @@ public class MapSet <K, V> implements DelegatingMap<K, Set<V>>, Iterable<MapSet.
         return values;
     }
 
-    public interface ForEach <K, V>  {
-        void process(K key, V val);
+    public interface ForEachEntry<K, V>  {
+        void accept(K key, V val);
     }
 
-    public void forEach(ForEach<K, V> action) {
-        backingMap.forEach((key, value) -> value.forEach(v -> action.process(key, v)));
+    public void forEachEntry(ForEachEntry<K, V> action) {
+        backingMap.forEach((key, value) -> value.forEach(v -> action.accept(key, v)));
+    }
+
+    public void forEach(K key, ForEachEntry<K, V> action) {
+        Set<V> values = backingMap.get(key);
+        if (values == null) {
+            return;
+        }
+        values.forEach(v -> action.accept(key, v));
     }
 
     @Override
