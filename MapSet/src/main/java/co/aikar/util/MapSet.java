@@ -28,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -99,7 +100,6 @@ public class MapSet <K, V> implements DelegatingMap<K, Set<V>> {
         backingMap.forEach((key, value) -> value.forEach(v -> action.accept(key, v)));
     }
 
-
     @Override
     public boolean containsValue(Object value) {
         for (Set<V> values : backingMap.values()) {
@@ -114,6 +114,66 @@ public class MapSet <K, V> implements DelegatingMap<K, Set<V>> {
     @Override
     public void putAll(@NotNull Map<? extends K, ? extends Set<V>> m) {
         m.forEach((k, values) -> get(k).addAll(values));
+    }
+
+
+    public interface Entry <K, V> {
+        K getKey();
+        V getValue();
+    }
+
+    public Iterator<Entry<K, V>> iterator() {
+        return new EntryIterator();
+    }
+
+    private class EntryIterator implements Iterator<Entry<K, V>> {
+
+        private final Iterator<Map.Entry<K, Set<V>>> iter;
+        private K curKey;
+        private Iterator<V> setIter;
+        private Entry<K, V> next;
+
+        EntryIterator() {
+            this.iter = MapSet.this.backingMap.entrySet().iterator();
+            this.setIter = null;
+            this.next = getNext();
+        }
+
+        private Entry<K, V> getNext() {
+            if (setIter == null || !setIter.hasNext()) {
+                if (!iter.hasNext()) {
+                    return null;
+                }
+                Map.Entry<K, Set<V>> next = iter.next();
+                curKey = next.getKey();
+                setIter = next.getValue().iterator();
+            }
+            if (!setIter.hasNext()) {
+                return null;
+            }
+            V val = setIter.next();
+            return new Entry<K, V>() {
+                @Override
+                public K getKey() {
+                    return curKey;
+                }
+
+                @Override
+                public V getValue() {
+                    return val;
+                }
+            };
+        }
+
+        @Override
+        public boolean hasNext() {
+            return next != null;
+        }
+
+        @Override
+        public Entry<K, V> next() {
+            return next;
+        }
     }
 
     @Nullable
