@@ -9,6 +9,7 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/DelegatingList" />
             <option value="$PROJECT_DIR$/DelegatingMap" />
             <option value="$PROJECT_DIR$/DelegatingSet" />
             <option value="$PROJECT_DIR$/LoadingMap" />

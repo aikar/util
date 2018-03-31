@@ -27,4 +27,5 @@ include 'Table'
 include 'LoadingMap'
 include 'DelegatingMap'
 include 'DelegatingSet'
+include 'DelegatingList'
 
