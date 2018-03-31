@@ -1,0 +1,155 @@
+/*
+ * Copyright (c) 2016-2018 Daniel Ennis (Aikar) - MIT License
+ *
+ *  Permission is hereby granted, free of charge, to any person obtaining
+ *  a copy of this software and associated documentation files (the
+ *  "Software"), to deal in the Software without restriction, including
+ *  without limitation the rights to use, copy, modify, merge, publish,
+ *  distribute, sublicense, and/or sell copies of the Software, and to
+ *  permit persons to whom the Software is furnished to do so, subject to
+ *  the following conditions:
+ *
+ *  The above copyright notice and this permission notice shall be
+ *  included in all copies or substantial portions of the Software.
+ *
+ *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ *  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ *  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ *  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ *  LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ *  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+package co.aikar.util;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
+public class MapSet <K, V> implements DelegatingMap<K, Set<V>> {
+
+    private final Map<K, Set<V>> backingMap;
+    private final Function<K, Set<V>> setSupplier;
+
+    public MapSet() {
+        this((Supplier<Set<V>>) HashSet::new);
+    }
+    public MapSet(Supplier<Set<V>> setSupplier) {
+        this(new HashMap<>(), k -> setSupplier.get());
+    }
+    public MapSet(Function<K, Set<V>> setSupplier) {
+        this(new HashMap<>(), setSupplier);
+    }
+    public MapSet(Map<K, Set<V>> backingMap, Supplier<Set<V>> setSupplier) {
+        this(backingMap, k -> setSupplier.get());
+    }
+    public MapSet(Map<K, Set<V>> backingMap, Function<K, Set<V>> setSupplier) {
+        this.backingMap = backingMap;
+        this.setSupplier = setSupplier;
+    }
+    @Override
+    public Map<K, Set<V>> delegate(boolean isReadOnly) {
+        return backingMap;
+    }
+
+    @Nullable
+    public Set<V> add(K key, V value) {
+        get(key).add(value);
+        return null;
+    }
+
+    public Set<V> get(Object key) {
+        //noinspection unchecked
+        return backingMap.computeIfAbsent((K) key, setSupplier);
+    }
+
+    @Nullable
+    @Override
+    public Set<V> put(K key, Set<V> value) {
+        Set<V> existing = get(key);
+        final Set<V> prev = new HashSet<>(existing);
+        existing.addAll(value);
+        return prev;
+    }
+
+    @Override
+    public boolean remove(Object key, Object value) {
+        return get(key).removeIf(it -> Objects.equals(it, value));
+    }
+
+    public interface ForEach <K, V>  {
+        void accept(K key, V val);
+    }
+
+    public void forEach(ForEach<K, V> action) {
+        backingMap.forEach((key, value) -> value.forEach(v -> action.accept(key, v)));
+    }
+
+    @Nullable
+    @Override
+    public Set<V> putIfAbsent(K key, Set<V> value) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean containsValue(Object value) {
+        for (Set<V> values : backingMap.values()) {
+            if (values.contains(value)) {
+                return true;
+            }
+        }
+        return false;
+
+    }
+
+    @Override
+    public void putAll(@NotNull Map<? extends K, ? extends Set<V>> m) {
+        m.forEach((k, values) -> get(k).addAll(values));
+    }
+
+
+    @Override
+    public void replaceAll(BiFunction<? super K, ? super Set<V>, ? extends Set<V>> function) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean replace(K key, Set<V> oldValue, Set<V> newValue) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Nullable
+    @Override
+    public Set<V> replace(K key, Set<V> value) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Set<V> computeIfAbsent(K key, Function<? super K, ? extends Set<V>> mappingFunction) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Set<V> computeIfPresent(K key, BiFunction<? super K, ? super Set<V>, ? extends Set<V>> remappingFunction) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Set<V> compute(K key, BiFunction<? super K, ? super Set<V>, ? extends Set<V>> remappingFunction) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Set<V> merge(K key, Set<V> value, BiFunction<? super Set<V>, ? super Set<V>, ? extends Set<V>> remappingFunction) {
+        throw new UnsupportedOperationException();
+    }
+}
