@@ -14,6 +14,8 @@
             <option value="$PROJECT_DIR$/DelegatingSet" />
             <option value="$PROJECT_DIR$/LoadingMap" />
             <option value="$PROJECT_DIR$/MRUMapCache" />
+            <option value="$PROJECT_DIR$/MapList" />
+            <option value="$PROJECT_DIR$/MapSet" />
             <option value="$PROJECT_DIR$/Table" />
           </set>
         </option>

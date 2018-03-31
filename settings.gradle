@@ -28,4 +28,6 @@ include 'LoadingMap'
 include 'DelegatingMap'
 include 'DelegatingSet'
 include 'DelegatingList'
+include 'MapList'
+include 'MapSet'
 

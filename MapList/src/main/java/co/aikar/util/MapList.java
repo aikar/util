@@ -26,66 +26,61 @@ package co.aikar.util;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class MapSet <K, V> implements DelegatingMap<K, Set<V>> {
+public class MapList <K, V> implements DelegatingMap<K, List<V>> {
+    private final Map<K, List<V>> backingMap;
+    private final Function<K, List<V>> listSupplier;
 
-    private final Map<K, Set<V>> backingMap;
-    private final Function<K, Set<V>> setSupplier;
-
-    public MapSet() {
-        this((Supplier<Set<V>>) HashSet::new);
+    public MapList() {
+        this((Supplier<List<V>>) ArrayList::new);
     }
-    public MapSet(Supplier<Set<V>> setSupplier) {
-        this(new HashMap<>(), k -> setSupplier.get());
+    public MapList(Supplier<List<V>> listSupplier) {
+        this(new HashMap<>(), k -> listSupplier.get());
     }
-    public MapSet(Function<K, Set<V>> setSupplier) {
-        this(new HashMap<>(), setSupplier);
+    public MapList(Function<K, List<V>> listSupplier) {
+        this(new HashMap<>(), listSupplier);
     }
-    public MapSet(Map<K, Set<V>> backingMap, Supplier<Set<V>> setSupplier) {
-        this(backingMap, k -> setSupplier.get());
+    public MapList(Map<K, List<V>> backingMap, Supplier<List<V>> listSupplier) {
+        this(backingMap, k -> listSupplier.get());
     }
-    public MapSet(Map<K, Set<V>> backingMap, Function<K, Set<V>> setSupplier) {
+    public MapList(Map<K, List<V>> backingMap, Function<K, List<V>> listSupplier) {
         this.backingMap = backingMap;
-        this.setSupplier = setSupplier;
+        this.listSupplier = listSupplier;
     }
     @Override
-    public Map<K, Set<V>> delegate(boolean isReadOnly) {
+    public Map<K, List<V>> delegate(boolean isReadOnly) {
         return backingMap;
     }
 
     @Nullable
-    public Set<V> add(K key, V value) {
+    public List<V> add(K key, V value) {
         get(key).add(value);
         return null;
     }
 
-    public Set<V> get(Object key) {
+    public List<V> get(Object key) {
         //noinspection unchecked
-        return backingMap.computeIfAbsent((K) key, setSupplier);
+        return backingMap.computeIfAbsent((K) key, listSupplier);
     }
 
     @Nullable
     @Override
-    public Set<V> put(K key, Set<V> value) {
-        Set<V> existing = get(key);
-        final Set<V> prev = new HashSet<>(existing);
+    public List<V> put(K key, List<V> value) {
+        List<V> existing = get(key);
+        final List<V> prev = new ArrayList<>(existing);
         existing.addAll(value);
         return prev;
     }
 
     @Override
     public boolean remove(Object key, Object value) {
-        Set<V> set = get(key);
-        boolean removed = set.removeIf(it -> Objects.equals(it, value));
-        if (set.isEmpty()) {
+        List<V> list = get(key);
+        boolean removed = list.removeIf(it -> Objects.equals(it, value));
+        if (list.isEmpty()) {
             backingMap.remove(key);
         }
         return removed;
@@ -102,7 +97,7 @@ public class MapSet <K, V> implements DelegatingMap<K, Set<V>> {
 
     @Override
     public boolean containsValue(Object value) {
-        for (Set<V> values : backingMap.values()) {
+        for (List<V> values : backingMap.values()) {
             if (values.contains(value)) {
                 return true;
             }
@@ -112,49 +107,57 @@ public class MapSet <K, V> implements DelegatingMap<K, Set<V>> {
     }
 
     @Override
-    public void putAll(@NotNull Map<? extends K, ? extends Set<V>> m) {
+    public void putAll(@NotNull Map<? extends K, ? extends List<V>> m) {
         m.forEach((k, values) -> get(k).addAll(values));
     }
 
-    @Nullable
-    @Override
-    public Set<V> putIfAbsent(K key, Set<V> value) {
-        throw new UnsupportedOperationException();
+    public @NotNull List<V> allValues() {
+        List<V> all = new ArrayList<>();
+        for (List<V> values : this.backingMap.values()) {
+            all.addAll(values);
+        }
+        return all;
     }
 
     @Override
-    public void replaceAll(BiFunction<? super K, ? super Set<V>, ? extends Set<V>> function) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean replace(K key, Set<V> oldValue, Set<V> newValue) {
+    public void replaceAll(BiFunction<? super K, ? super List<V>, ? extends List<V>> function) {
         throw new UnsupportedOperationException();
     }
 
     @Nullable
     @Override
-    public Set<V> replace(K key, Set<V> value) {
+    public List<V> putIfAbsent(K key, List<V> value) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Set<V> computeIfAbsent(K key, Function<? super K, ? extends Set<V>> mappingFunction) {
+    public boolean replace(K key, List<V> oldValue, List<V> newValue) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Nullable
+    @Override
+    public List<V> replace(K key, List<V> value) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Set<V> computeIfPresent(K key, BiFunction<? super K, ? super Set<V>, ? extends Set<V>> remappingFunction) {
+    public List<V> computeIfAbsent(K key, Function<? super K, ? extends List<V>> mappingFunction) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Set<V> compute(K key, BiFunction<? super K, ? super Set<V>, ? extends Set<V>> remappingFunction) {
+    public List<V> computeIfPresent(K key, BiFunction<? super K, ? super List<V>, ? extends List<V>> remappingFunction) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Set<V> merge(K key, Set<V> value, BiFunction<? super Set<V>, ? super Set<V>, ? extends Set<V>> remappingFunction) {
+    public List<V> compute(K key, BiFunction<? super K, ? super List<V>, ? extends List<V>> remappingFunction) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<V> merge(K key, List<V> value, BiFunction<? super List<V>, ? super List<V>, ? extends List<V>> remappingFunction) {
         throw new UnsupportedOperationException();
     }
 }
