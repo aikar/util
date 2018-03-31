@@ -25,4 +25,6 @@ rootProject.name = 'util'
 include 'MRUMapCache'
 include 'Table'
 include 'LoadingMap'
+include 'DelegatingMap'
+include 'DelegatingSet'
 
