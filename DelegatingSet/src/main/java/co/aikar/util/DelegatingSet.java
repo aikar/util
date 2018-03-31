@@ -35,98 +35,98 @@ import java.util.stream.Stream;
 
 public interface DelegatingSet <T> extends Set<T> {
 
-    Set<T> delegate();
+    Set<T> delegate(boolean isReadOnly);
 
     @Override
     default int size() {
-        return delegate().size();
+        return delegate(true).size();
     }
 
     @Override
     default boolean isEmpty() {
-        return delegate().isEmpty();
+        return delegate(true).isEmpty();
     }
 
     @Override
     default boolean contains(Object o) {
-        return delegate().contains(o);
+        return delegate(true).contains(o);
     }
 
     @NotNull
     @Override
     default Iterator<T> iterator() {
-        return delegate().iterator();
+        return delegate(false).iterator();
     }
 
     @NotNull
     @Override
     default Object[] toArray() {
-        return delegate().toArray();
+        return delegate(true).toArray();
     }
 
     @NotNull
     @Override
     default <T1> T1[] toArray(@NotNull T1[] a) {
-        return delegate().toArray(a);
+        return delegate(true).toArray(a);
     }
 
     @Override
     default boolean add(T t) {
-        return delegate().add(t);
+        return delegate(false).add(t);
     }
 
     @Override
     default boolean remove(Object o) {
-        return delegate().remove(o);
+        return delegate(false).remove(o);
     }
 
     @Override
     default boolean containsAll(@NotNull Collection<?> c) {
-        return delegate().containsAll(c);
+        return delegate(true).containsAll(c);
     }
 
     @Override
     default boolean addAll(@NotNull Collection<? extends T> c) {
-        return delegate().addAll(c);
+        return delegate(false).addAll(c);
     }
 
     @Override
     default boolean retainAll(@NotNull Collection<?> c) {
-        return delegate().retainAll(c);
+        return delegate(false).retainAll(c);
     }
 
     @Override
     default boolean removeAll(@NotNull Collection<?> c) {
-        return delegate().removeAll(c);
+        return delegate(false).removeAll(c);
     }
 
     @Override
     default void clear() {
-        delegate().clear();
+        delegate(false).clear();
     }
 
     @Override
     default Spliterator<T> spliterator() {
-        return delegate().spliterator();
+        return delegate(false).spliterator();
     }
 
     @Override
     default boolean removeIf(Predicate<? super T> filter) {
-        return delegate().removeIf(filter);
+        return delegate(false).removeIf(filter);
     }
 
     @Override
     default Stream<T> stream() {
-        return delegate().stream();
+        return delegate(false).stream();
     }
 
     @Override
     default Stream<T> parallelStream() {
-        return delegate().parallelStream();
+        return delegate(false).parallelStream();
     }
 
     @Override
     default void forEach(Consumer<? super T> action) {
-        delegate().forEach(action);
+        delegate(true).forEach(action);
     }
 }
