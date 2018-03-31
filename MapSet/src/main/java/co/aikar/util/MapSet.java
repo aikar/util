@@ -104,6 +104,15 @@ public class MapSet <K, V> implements DelegatingMap<K, Set<V>>, Iterable<MapSet.
         return removed;
     }
 
+    public @NotNull Set<V> allValues() {
+        Set<V> values = new HashSet<>();
+        for (Set<V> entries : backingMap.values()) {
+            values.addAll(entries);
+        }
+
+        return values;
+    }
+
     public interface ForEach <K, V>  {
         void accept(K key, V val);
     }
