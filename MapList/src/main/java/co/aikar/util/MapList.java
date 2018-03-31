@@ -67,6 +67,16 @@ public class MapList <K, V> implements DelegatingMap<K, List<V>>, Iterable<MapLi
         return backingMap.computeIfAbsent((K) key, listSupplier);
     }
 
+    public boolean has(K key) {
+        List<V> values = backingMap.get(key);
+        return values != null && !values.isEmpty();
+    }
+
+    public int size(K key) {
+        List<V> values = backingMap.get(key);
+        return values != null ? values.size() : 0;
+    }
+
     @Nullable
     @Override
     public List<V> put(K key, List<V> value) {

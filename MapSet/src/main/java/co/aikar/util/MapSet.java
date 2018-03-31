@@ -73,6 +73,17 @@ public class MapSet <K, V> implements DelegatingMap<K, Set<V>>, Iterable<MapSet.
         return backingMap.computeIfAbsent((K) key, setSupplier);
     }
 
+    public boolean has(K key) {
+        Set<V> values = backingMap.get(key);
+        return values != null && !values.isEmpty();
+    }
+
+    public int size(K key) {
+        Set<V> values = backingMap.get(key);
+        return values != null ? values.size() : 0;
+    }
+
+
     @Nullable
     @Override
     public Set<V> put(K key, Set<V> value) {
