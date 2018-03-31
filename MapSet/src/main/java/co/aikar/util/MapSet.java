@@ -68,6 +68,7 @@ public class MapSet <K, V> implements DelegatingMap<K, Set<V>>, Iterable<MapSet.
         return null;
     }
 
+    @NotNull
     public Set<V> get(Object key) {
         //noinspection unchecked
         return backingMap.computeIfAbsent((K) key, setSupplier);

@@ -62,6 +62,7 @@ public class MapList <K, V> implements DelegatingMap<K, List<V>>, Iterable<MapLi
         return null;
     }
 
+    @NotNull
     public List<V> get(Object key) {
         //noinspection unchecked
         return backingMap.computeIfAbsent((K) key, listSupplier);
