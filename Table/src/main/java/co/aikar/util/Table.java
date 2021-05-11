@@ -36,7 +36,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-public class Table <R, C, V> implements Iterable<Table.Entry<R, C, V>>{
+public class Table<R, C, V> implements Iterable<Table.Entry<R, C, V>> {
 
     private final Map<R, Map<C, V>> rowMap;
     private final Function<R, Map<C, V>> colMapSupplier;
@@ -90,14 +90,14 @@ public class Table <R, C, V> implements Iterable<Table.Entry<R, C, V>>{
     }
 
     public void forEach(TableConsumer<R, C, V> consumer) {
-        for (Iterator<Entry<R, C, V>> it = this.iterator(); it.hasNext(); ) {
+        for (Iterator<Entry<R, C, V>> it = this.iterator(); it.hasNext()) {
             Entry<R, C, V> entry = it.next();
             consumer.accept(entry.getRow(), entry.getCol(), entry.getValue());
         }
     }
 
     public void forEach(TablePredicate<R, C, V> predicate) {
-        for (Iterator<Entry<R, C, V>> it = this.iterator(); it.hasNext(); ) {
+        for (Iterator<Entry<R, C, V>> it = this.iterator(); it.hasNext()) {
             Entry<R, C, V> entry = it.next();
             if (!predicate.test(entry.getRow(), entry.getCol(), entry.getValue())) {
                 return;
@@ -106,7 +106,7 @@ public class Table <R, C, V> implements Iterable<Table.Entry<R, C, V>>{
     }
 
     public void removeIf(TablePredicate<R, C, V> predicate) {
-        for (Iterator<Entry<R, C, V>> it = this.iterator(); it.hasNext(); ) {
+        for (Iterator<Entry<R, C, V>> it = this.iterator(); it.hasNext()) {
             Entry<R, C, V> entry = it.next();
             if (predicate.test(entry.getRow(), entry.getCol(), entry.getValue())) {
                 it.remove();
@@ -170,7 +170,7 @@ public class Table <R, C, V> implements Iterable<Table.Entry<R, C, V>>{
     }
 
     public void replaceAll(TableFunction<R, C, V, V> function) {
-        for (Iterator<Entry<R, C, V>> it = this.iterator(); it.hasNext(); ) {
+        for (Iterator<Entry<R, C, V>> it = this.iterator(); it.hasNext()) {
             Entry<R, C, V> entry = it.next();
             entry.setValue(function.compose(entry.getRow(), entry.getCol(), entry.getValue()));
         }
@@ -296,14 +296,14 @@ public class Table <R, C, V> implements Iterable<Table.Entry<R, C, V>>{
         }
     }
 
-    public interface Entry <R, C, V> {
+    public interface Entry<R, C, V> {
         R getRow();
         C getCol();
         V getValue();
         V setValue(V value);
     }
 
-    private class Node implements Entry <R, C, V> {
+    private class Node implements Entry<R, C, V> {
 
         private final Map.Entry<R, Map<C, V>> rowEntry;
         private final Map.Entry<C, V> colEntry;
